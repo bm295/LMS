@@ -17,6 +17,7 @@ namespace WebApplication.Pages
         public ErrorModel(ILogger<ErrorModel> logger)
         {
             _logger = logger;
+            RequestId = string.Empty;
         }
 
         public string RequestId { get; set; }

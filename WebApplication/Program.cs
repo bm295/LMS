@@ -1,11 +1,14 @@
 using LMS.Application;
 using LMS.Infrastructure.DependencyInjection;
+using WebApplication;
+using WebApplication.Installers;
 
 var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddApplication()
-    .AddInfrastructure();
+    .AddInfrastructure()
+    .InstallServicesInAssembly<IApiAssemblyMarker>(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 
