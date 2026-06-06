@@ -1,10 +1,29 @@
 # System Architecture — LMS Rewrite
 
-## Recommended architecture
+## Implemented architecture
 
-- Modular monolith for MVP (clear internal domain modules)
-- API-first backend (REST now, GraphQL optional later)
-- Server-rendered or SPA frontend (decision can follow team preference)
+The repository now follows Clean Architecture as a modular monolith foundation for the LMS MVP.
+
+```text
+WebApplication -> LMS.Application -> LMS.Domain
+WebApplication -> LMS.Infrastructure -> LMS.Application -> LMS.Domain
+```
+
+- `LMS.Domain`: enterprise business rules, entities, invariants, and vocabulary.
+- `LMS.Application`: application use cases, DTOs, and ports that describe required persistence or integration capabilities.
+- `LMS.Infrastructure`: adapters that implement application ports for persistence and external systems.
+- `WebApplication`: ASP.NET Core composition root, HTTP API controllers, static assets, and React SPA.
+
+## Dependency rule
+
+Source dependencies must point inward toward the domain. The domain layer must not reference ASP.NET Core, React, databases, messaging providers, or infrastructure packages. Application code may reference domain code and define ports, but infrastructure owns concrete adapter implementations.
+
+## Recommended runtime model
+
+- Modular monolith for MVP with clear internal domain modules.
+- API-first backend with REST endpoints initially; GraphQL can be evaluated later.
+- React SPA presentation hosted by ASP.NET Core.
+- Infrastructure adapters can evolve from in-memory repositories to a relational database, object storage, notifications, and audit pipelines without changing domain rules.
 
 ## Backend modules
 
@@ -38,4 +57,5 @@
 
 ## Change log
 
+- v1.1: Repository reorganized into Clean Architecture layers.
 - v1.0: Initial architecture target.
