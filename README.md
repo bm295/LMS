@@ -1,29 +1,52 @@
-# Puzzle → AI-Native LMS Rewrite
+# AI-Native LMS
 
-This repository is being repurposed into an AI-native Learning Management System (LMS).
+This repository has been reorganized around Clean Architecture so the LMS domain and workflows are isolated from delivery and infrastructure concerns.
 
-## Start here
+## Solution layout
 
-Read the document execution order first:
+```text
+LMS.Domain/          Enterprise business rules: entities, value rules, invariants.
+LMS.Application/     Application business rules: use cases, DTOs, repository ports.
+LMS.Infrastructure/  Adapters for external concerns such as persistence and integrations.
+WebApplication/      ASP.NET Core API host and React SPA presentation layer.
+docs/                Product, architecture, security, operations, and agent workflow docs.
+```
 
-- `docs/00_AI_EXECUTION_ORDER.md`
+## Dependency rule
 
-Then execute each document in sequence (`01` to `13`) to drive planning, architecture, implementation, and operations.
+Dependencies point inward only:
 
-## Existing runtime (current code)
+```text
+WebApplication -> LMS.Application -> LMS.Domain
+WebApplication -> LMS.Infrastructure -> LMS.Application -> LMS.Domain
+```
 
-The existing codebase currently runs as a .NET web app:
+The domain has no dependency on ASP.NET Core, React, persistence, or other external frameworks. Infrastructure implements application ports, and the web layer composes the application at startup.
+
+## Current runtime
+
+Run the web application with:
 
 ```bash
 dotnet run --project WebApplication/WebApplication.csproj
 ```
 
-## Goal
+The React app calls `GET /api/courses`, which is served by an application use case and an in-memory infrastructure repository.
 
-Transition from the current puzzle/demo structure to an LMS that supports:
+## LMS goal
+
+Continue evolving the system toward:
 
 - Multi-tenant organizations
 - Role-based administration
 - Course authoring and publishing
 - Assessments, grading, and progress tracking
 - Reporting, notifications, and auditability
+
+## Start here for product execution
+
+Read the document execution order first:
+
+- `docs/00_AI_EXECUTION_ORDER.md`
+
+Then execute each document in sequence (`01` to `13`) to drive planning, architecture, implementation, and operations.
