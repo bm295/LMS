@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LMS</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; color: #202124; }
+    code { background: #f1f3f4; padding: .15rem .35rem; border-radius: 4px; }
+    li { margin: .5rem 0; }
+  </style>
+</head>
+<body>
+  <h1>LMS</h1>
+  <p>Backend đang chạy. Published courses:</p>
+  <ul id="courses"><li>Đang tải...</li></ul>
+  <p>API: <a href="/api/courses"><code>/api/courses</code></a></p>
+  <script>
+    fetch('/api/courses')
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then(courses => {
+        const list = document.getElementById('courses');
+        list.replaceChildren();
+        if (!courses.length) {
+          list.innerHTML = '<li>Chưa có khóa học được publish.</li>';
+          return;
+        }
+        courses.forEach(course => {
+          const item = document.createElement('li');
+          item.textContent = `${course.title} (${course.status})`;
+          list.appendChild(item);
+        });
+      })
+      .catch(error => {
+        document.getElementById('courses').innerHTML =
+          `<li>Không tải được dữ liệu: ${error.message}</li>`;
+      });
+  </script>
+</body>
+</html>
