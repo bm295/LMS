@@ -58,8 +58,9 @@ export class FetchData extends Component {
   }
 
   async populateCourseData() {
-    const response = await fetch('api/courses');
+    const response = await fetch('/api/courses');
     const data = await response.json();
     this.setState({ courses: data, loading: false });
   }
 }
+
