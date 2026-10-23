@@ -1,6 +1,17 @@
 # API and Event Specifications
 
-## API conventions
+## Implemented runtime (Python)
+
+The `python-api/` FastAPI project owns these implemented routes:
+
+- `GET /api/courses`: published course summaries, ordered by title, with lessons ordered by sequence.
+- `POST /api/courses/{courseId}/enrollments`: enroll a learner; returns 201 and a Location header.
+
+The previous .NET controller, API application services, and in-memory adapters have been removed.
+See `python-api/README.md` for contracts, validation, and runtime instructions.
+The `/api/v1` endpoints below are planned contracts, not implemented routes.
+
+## Planned API conventions
 
 - Versioned base path: `/api/v1`
 - JSON request/response contracts
@@ -54,3 +65,4 @@
 ## Change log
 
 - v1.0: Initial API and event contract definitions.
+

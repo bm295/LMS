@@ -6,22 +6,19 @@ This repository has been reorganized around Clean Architecture so the LMS domain
 
 ```text
 LMS.Domain/          Enterprise business rules: entities, value rules, invariants.
-LMS.Application/     Application business rules: use cases, DTOs, repository ports.
-LMS.Infrastructure/  Adapters for external concerns such as persistence and integrations.
-WebApplication/      ASP.NET Core API host and React SPA presentation layer.
+LMS.Application/     Legacy .NET configuration constants.
+LMS.Infrastructure/  Legacy .NET library shell (API adapters removed).
+python-api/          Python FastAPI REST API (course catalog and enrollments).
+WebApplication/      React SPA and optional ASP.NET Core static presentation host.
 docs/                Product, architecture, security, operations, and agent workflow docs.
 ```
 
-## Dependency rule
+## Runtime architecture
 
-Dependencies point inward only:
-
-```text
-WebApplication -> LMS.Application -> LMS.Domain
-WebApplication -> LMS.Infrastructure -> LMS.Application -> LMS.Domain
-```
-
-The domain has no dependency on ASP.NET Core, React, persistence, or other external frameworks. Infrastructure implements application ports, and the web layer composes the application at startup.
+`python-api/` owns HTTP contracts, enrollment rules, and in-memory data for the
+migrated APIs. It runs independently of .NET. React uses the same `/api` URLs
+through a development or production reverse proxy. The .NET domain library is
+retained for existing non-HTTP domain functionality and domain tests.
 
 ## Current runtime
 
@@ -31,7 +28,21 @@ Run the web application with:
 dotnet run --project WebApplication/WebApplication.csproj
 ```
 
-The React app calls `GET /api/courses`, which is served by an application use case and an in-memory infrastructure repository.
+The REST API now runs independently in Python:
+
+```bash
+cd python-api
+python -m venv .venv
+. .venv/bin/activate
+pip install -e '.[test]'
+uvicorn lms_api.main:app --host 0.0.0.0 --port 8000
+```
+
+For frontend development, run `npm install` and `npm start` in
+`WebApplication/ClientApp`; the development server proxies API requests to port 8000.
+For deployment, route `/api/*` to Python and other paths to the frontend using a
+reverse proxy. The optional .NET static host no longer serves LMS APIs.
+See [Python API documentation](python-api/README.md) for testing and limitations.
 
 ## LMS goal
 
@@ -50,3 +61,4 @@ Read the document execution order first:
 - `docs/00_AI_EXECUTION_ORDER.md`
 
 Then execute each document in sequence (`01` to `13`) to drive planning, architecture, implementation, and operations.
+
